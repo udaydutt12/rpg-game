@@ -27,6 +27,7 @@ void dontmove()
 {
   if(ready)
   return true;
+  // updated hitbox
   if((hero.position.y < hades.position.y + 50 && hero.position.y > hades.position.y - 50) && (hero.position.x > hades.position.x - 20 && hero.position.x<hades.position.x + 20))
    return true;
      else {
