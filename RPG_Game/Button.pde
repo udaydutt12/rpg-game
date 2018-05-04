@@ -7,13 +7,13 @@ class Button {
   color baseColor;
   int textSize = 20;
   
-  Button(String text, int xPos, int yPos, float heightSize,
+  Button(String text, int x, int y, float widths,float heights,
   color textColor, color overColor, color boxColor) {
     this.text = text;
-    this.xPos = xPos;
-    this.yPos = yPos;
-    this.heightSize = heightSize;
-    widthSize = textWidth(text) + 100;
+    this.xPos = x;
+    this.yPos = y;
+    this.heightSize = heights;
+    widthSize = widths;
     this.textColor = textColor;
     baseColor = textColor;
     this.overColor = overColor;
@@ -23,7 +23,7 @@ class Button {
   void display()
   {
     pushStyle();
-    textAlign(CENTER);
+  //  textAlign(CENTER);
     if (mouseOver())
     {
       fill(overColor);

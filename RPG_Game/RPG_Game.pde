@@ -1,13 +1,5 @@
-TextBox tbox;
- 
-final int stateNormal   = 0;
-final int stateInputBox = 1;
-int state=stateNormal; 
- 
-// the user name 
-String result="/"; 
-
-
+MultilineTextBox textBox;
+import java.awt.event.KeyEvent;
 //WidthxHeight=800x480
 character hades;
 character hero;
@@ -37,6 +29,9 @@ Button button1;
 Button button2;
 Button button3;
 Button button4;
+Button hero1;
+Button hero2;
+Button hero3;
 
 
 void setup() 
@@ -65,6 +60,7 @@ void setup()
    frameRate(15);
    hades = new character(width*6/7,height/2.0,imgct);
    hero = new character(width/6.0,height/2.0,imgs);
+   textBox = new MultilineTextBox("Your Text", 50, 50, 100, 20);
 }
 
 void draw() 
@@ -81,6 +77,10 @@ void draw()
     {
       NewGameMenu();
     }
+   else if(screen==3)
+   {
+     HeroSelect();
+   }
   else
     {
       textSize(12);
@@ -92,28 +92,36 @@ void draw()
       if(hero.isReady())
         {
           ready=true;
-          screen=4;
+          screen=5;
           combatScreen();
         }
     }
 }
+void mousePressed() {
+  if(screen==2)
+  textBox.updatePress();
+}
+void mouseDragged() {
+  if(screen==2)
+  textBox.updateDrag();
+}
 
 void keyPressed()
 {
+  if(screen==2)
+   textBox.updateKeys();
   if(key == 'm' || key == 'M') 
     {
       if(song.isMuted()) song.unmute();
       else song.mute();
     }
-  if(key=='w' && screen!=4)
+  if(key=='w' && screen!=5)
       hero.alterY(1);
-      
-
-  if(key=='s'&& screen!=4)
+  if(key=='s'&& screen!=5)
     hero.alterY(0);
-  if (key=='a'&& screen!=4)
+  if (key=='a'&& screen!=5)
     hero.alterX(0);
-  if (key=='d'&& screen!=4)
+  if (key=='d'&& screen!=5)
     hero.alterX(1);
 }
 void keyReleased()
@@ -124,8 +132,10 @@ void keyReleased()
           key=' ';
         }
         if (key==ENTER&&screen==2)
-        screen=3;
-        
+        {
+          screen=3;
+          key=' ';
+        }
 }
 void InstructionsMenu()
 {
@@ -159,46 +169,64 @@ void menuScreen()
   textAlign(CENTER);
   text("Our Game" , width/2, 100);
   textSize(20);
-  button1 = new Button("New Game", width/2 - 95, height/2 - 100, 60, color(0), color(#468BFF), color(255));
+  button1 = new Button("New Game", width/2 - 95, height/2 - 100, 200,60, color(0), color(#468BFF), color(255));
   button1.display();
-  button2 = new Button("Load Game", width/2 - 95, height/2, 60, color(0), color(#468BFF), color(255));
+  button2 = new Button("Load Game", width/2 - 95, height/2, 200,60, color(0), color(#468BFF), color(255));
   button2.display();
   if (button1.mouseOver()&&mousePressed)
     screen=1;
 }
 void mouseReleased()
 {
-   if (state==stateNormal&&screen==2) 
-    state = stateInputBox;
+    if(screen==2)
+  textBox.updateRelease();
+
 
 }
 void NewGameMenu()
 {
-
- //   rectMode(CENTER);
-  //textAlign(CENTER);
-//  strokeWeight(1.5);
-//  background(0);
-//  fill(255);
       background(0);
       textAlign(LEFT);
       fill(255);
       textSize(40); 
    //   text("Welcome to our RPG", width/12+140, height/6);
-  if (state==stateNormal) {
-    text("Click mouse\nYour name: "+result, width/2, height/2);
-  } else  if (state==stateInputBox) {
-    tbox.display();
+      text("Enter your Name", width/2, height/2);
+      textBox.update();
+      textBox.display();
   }
-}
-void instantiateBox() {
-  tbox = new TextBox(
-    "Please enter your name: ", 
-    400, 200, // x, y
-    100, 40, // w, h
-    215, // lim
-    0300 << 030, color(-1, 040), // textC, baseC
-    color(-1, 0100), color(#FF00FF, 0200)); // bordC, slctC
+
+//void instantiateBox() {
+//  tbox = new TextBox(
+//    "Please enter your name: ", 
+//    400, 200, // x, y
+//    100, 40, // w, h
+//    215, // lim
+//    0300 << 030, color(-1, 040), // textC, baseC
+//    color(-1, 0100), color(#FF00FF, 0200)); // bordC, slctC
+//}
+void HeroSelect()
+{
+  PImage [] x=new PImage[3];
+  x[0]=loadImage("GunIdle.png");
+  x[1]=loadImage("MageIdle.png");
+  x[2]=loadImage("WarIdle.png");
+  background(0);
+  hero1 = new Button(" ", 0, 0,width/3, height, color(0), color(#468BFF), color(255));
+  hero1.display();
+  image(x[0],0,0,width/3,height);
+  hero2 = new Button(" ", width/3, 0,width/3, height, color(0), color(#468BFF), color(255));
+  hero2.display();
+  image(x[1],width/3,0,width/3,height);
+  hero3 = new Button(" ", width/3*2, 0,width/3, height, color(0), color(#468BFF), color(255));
+  hero3.display();
+  image(x[2],width/3*2,0,width/3,height);
+  if (hero1.mouseOver()&&mousePressed)
+    screen=4;
+      if (hero2.mouseOver()&&mousePressed)
+    screen=4;
+      if (hero3.mouseOver()&&mousePressed)
+    screen=4;
+  
 }
 void combatScreen()
 {
@@ -210,9 +238,9 @@ void combatScreen()
   hades.position.y=height/2; 
   //hero.dontmove();
   hades.display(200,200);
-  button3 = new Button("Attack", width/10-100, height*7/8 -60, 60, color(0), color(#468BFF), color(255));
+  button3 = new Button("Attack", width/10-100, height*7/8 -60,140, 60, color(0), color(#468BFF), color(255));
   button3.display();
-  button4 = new Button("Abilities", width/10-100, height*7/8, 60, color(0), color(#468BFF), color(255));
+  button4 = new Button("Abilities", width/10-100, height*7/8,140, 60, color(0), color(#468BFF), color(255));
   button4.display();
   hero.displayhp();
   hero.displaymp();
@@ -224,8 +252,7 @@ void combatScreen()
   text("MP: "+hero.mp,hero.position.x+60,hero.position.y+160);
   if (button3.mouseOver()&&mousePressed)
     {     
-      hero.attack();
-      
+      hero.attack();     
       hades.attack();
     }
   for (int i=0; i<shots.size(); i++)
