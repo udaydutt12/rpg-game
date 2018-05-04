@@ -14,6 +14,9 @@ PImage[] bullets=new PImage[1];
 float x;
 boolean ready=false;
 boolean hasnotflashed=true;
+boolean move=false;
+boolean turn=true;
+boolean counter=false;
 float y = 350;
 float delay = 10.0;
 float change;
@@ -25,6 +28,8 @@ AudioPlayer song;
 int screen = 0;
 int flash=1;
 int start=0;
+int interval=2;
+int t;
 Button button1;
 Button button2;
 Button button3;
@@ -32,10 +37,12 @@ Button button4;
 Button hero1;
 Button hero2;
 Button hero3;
+StopWatchTimer sw;
 
 
 void setup() 
 {  
+   sw = new StopWatchTimer();
    bullet[0]=loadImage("bullet0.png");
    bullets[0]=loadImage("bullet1.png");
    imgct=new PImage[1];
@@ -58,8 +65,8 @@ void setup()
    bg = loadImage("arena.jpg");
    surface.setSize(bg.width, bg.height);
    frameRate(15);
-   hades = new character(width*6/7,height/2.0,imgct);
-   hero = new character(width/6.0,height/2.0,imgs);
+   hades = new character(width*6/7,height/2.0,imgct, false);
+   hero = new character(width/6.0,height/2.0,imgs, true);
    textBox = new MultilineTextBox("Your Text", 50, 50, 100, 20);
 }
 
@@ -95,6 +102,15 @@ void draw()
           screen=5;
           combatScreen();
         }
+    }
+    if (move && counter==true){
+      t = interval-sw.getElapsedTime()/1000;
+      if (t==0){
+        hades.attack(hero);
+        move=false;
+        interval=2;
+        turn=true;
+      }
     }
 }
 void mousePressed() {
@@ -252,12 +268,34 @@ void combatScreen()
   text("MP: "+hero.mp,hero.position.x+60,hero.position.y+160);
   if (button3.mouseOver()&&mousePressed)
     {     
-      hero.attack();     
-      hades.attack();
+      if (turn){
+        hero.attack(hades);  
+        move=true;
+        sw.start();
+        turn=false;
+      }
     }
-  for (int i=0; i<shots.size(); i++)
+  for (Shot shot: new ArrayList <Shot> (shots))
     { 
-      shots.get(i).move();
-      shots.get(i).display();
+      if (!counter){
+        shot.move();
+        if (shot.position.x<hades.position.x){;
+          shot.display();
+        }
+        else{
+          counter=true;
+          shots.remove(shot);
+        }
+      }
+      else{
+        shot.counter();
+        if (shot.position.x>hero.position.x){
+          shot.display();
+        }
+        else{
+          counter=false;
+          shots.remove(shot);
+        }
+      }
     }
 }

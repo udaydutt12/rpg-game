@@ -1,8 +1,9 @@
 class character extends Sprite{
   float hp=100; float mp=30;
-  boolean dontmove=false;
-character(float posx,float posy,PImage[] images){
+  boolean dontmove=false; boolean hero;
+character(float posx,float posy,PImage[] images, boolean hero){
  super(posx,posy,images);
+ this.hero=hero;
 }
 
 void dontmove()
@@ -43,9 +44,19 @@ void dontmove()
     fill(0,0,255);
     rect(position.x+60,position.y-mp+210,5,mp);
   }
-  void attack()
+  void attack(character other)
   {   
-   Shot newShot= new Shot(position.x+50,position.y-10,bullet,90);
-   shots.add(newShot); 
+   if (hero){
+     Shot newShot= new Shot(position.x+50,position.y-10,bullet,90);
+     shots.add(newShot);
+     other.hp-=5;
+     
+   }
+   else{
+     Shot newShot= new Shot(position.x-50,position.y-10,bullet,90);
+     shots.add(newShot);
+     other.hp-=3;
+   }
   }
+  
 }

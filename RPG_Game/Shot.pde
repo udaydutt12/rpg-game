@@ -10,7 +10,13 @@ class Shot extends Sprite
   // position.y=10;
  }
   void move(){
-    int magnitude=4;
+    int magnitude=8;
+    position.x += magnitude*cos(3*PI/2+radians(a));
+    position.y += magnitude*sin(3*PI/2+radians(a));
+  }
+  
+  void counter(){
+    int magnitude=-8;
     position.x += magnitude*cos(3*PI/2+radians(a));
     position.y += magnitude*sin(3*PI/2+radians(a));
   }
