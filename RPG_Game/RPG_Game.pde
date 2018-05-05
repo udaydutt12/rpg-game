@@ -3,6 +3,7 @@ import java.awt.event.KeyEvent;
 //WidthxHeight=800x480
 character hades;
 character hero;
+PImage [] character;
 boolean hurt=false;
 Boolean turnOffGUI=false;
 ArrayList <StopWatchTimer> watches=new ArrayList <StopWatchTimer>(0);
@@ -34,6 +35,10 @@ int flash=1;
 int start=0;
 int interval=2;
 int t;
+int pic=1;
+int picx=width/2;
+int picchange=20;
+int pic1=1;
 Button button1;
 Button button2;
 Button button3;
@@ -208,6 +213,19 @@ void menuScreen()
   textAlign(CENTER);
   text("Our Game" , width/2, 100);
   textSize(20);
+  PImage[] x=new PImage[3];
+  x[0]=loadImage("special_0.png");
+  x[1]=loadImage("special_1.png");
+  x[2]=loadImage("special_2.png");
+  image(x[pic],picx, height/2);
+  if (pic==0 || pic==2){
+    pic1*=-1;
+  }
+  if (picx>width-100 || picx<0){
+    picchange*=-1;
+  }
+  pic+=pic1;
+  picx+=picchange;
   button1 = new Button("New Game", width/2 - 95, height/2 - 100, 200,60, color(0), color(#468BFF), color(255));
   button1.display();
   button2 = new Button("Load Game", width/2 - 95, height/2, 200,60, color(0), color(#468BFF), color(255));
@@ -259,17 +277,25 @@ void HeroSelect()
   hero3 = new Button(" ", width/3*2, 0,width/3, height, color(0), color(#468BFF), color(255));
   hero3.display();
   image(x[2],width/3*2,0,width/3,height);
-  if (hero1.mouseOver()&&mousePressed)
+  if (hero1.mouseOver() && mousePressed)
     {
       screen=4;
-      hero = new character(width/6.0,height/2.0,gunner, true,'g');
+      character=gunner;
+      hero = new character(width/6.0,height/2.0,character, true,'g');
     }
       if (hero2.mouseOver()&&mousePressed)
     {screen=4;
-    hero = new character(width/6.0,height/2.0,magesprite, true,'m');
+    character=magesprite;
+    hero = new character(width/6.0,height/2.0,character, true,'m');
+    hero.hp=90;
+    hero.mp=40;
     }
       if (hero3.mouseOver()&&mousePressed)
-      {hero = new character(width/6.0,height/2.0,warsprite, true,'w');
+      {
+        character=warsprite;
+        hero = new character(width/6.0,height/2.0,character, true,'w');
+        hero.hp=70;
+        hero.mp=50;
     screen=4;
       }
   
@@ -280,9 +306,9 @@ void combatScreen()
   hero.position.x=width/4;
   hero.position.y=height/2;
   if(!hurt)
-  hero.display(200,200,gunner[4]);
+  hero.display(200,200,character[4]);
   else
-  hero.display(200,200,gunner[5]);
+  hero.display(200,200,character[5]);
   hades.position.x=width*3/4;
   hades.position.y=height/2; 
   //hero.dontmove();
@@ -332,7 +358,7 @@ void combatScreen()
         else{
           counter=false;
           shots.remove(shot);
-          hero.display(200,200,gunner[5]);
+          hero.display(200,200,character[5]);
           hurt=true;
           turnOffGUI=false;
         }

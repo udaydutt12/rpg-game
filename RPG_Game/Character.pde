@@ -62,6 +62,25 @@ void dontmove()
     fill(0,0,255);
     rect(position.x+60,position.y-mp+210,5,mp);
   }
+  
+  void special(character hero){
+    float special=10;
+    mp-=special;
+    if (hero.mp >=special/2){
+      hero.mp-=special/2;
+      hero.hp-=special/2;
+    }
+    else{
+      float orig = special;
+      while (hero.mp > 0){
+        special -=1;
+        hero.mp -=1;
+      }
+      hero.hp -= special;
+      special = orig;
+    }
+  }
+  
   void attack(character other)
   {   
    if (hero){
@@ -73,7 +92,11 @@ void dontmove()
    else{
      Shot newShot= new Shot(position.x-50,position.y-10,bullet,90);
      shots.add(newShot);
-     other.hp-=3;
+     float rand=random(0,5);
+     if (rand>4){
+       special(other);
+     }
+     else{other.hp-=3;}
    }
   }
   
