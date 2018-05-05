@@ -3,12 +3,16 @@ import java.awt.event.KeyEvent;
 //WidthxHeight=800x480
 character hades;
 character hero;
+boolean hurt=false;
+Boolean turnOffGUI=false;
 ArrayList <StopWatchTimer> watches=new ArrayList <StopWatchTimer>(0);
 ArrayList <Shot> shots=new ArrayList <Shot>(0);
-PImage [] imgs=new PImage[7];
+PImage [] gunner=new PImage[7];
+PImage [] magesprite=new PImage[7];
+PImage [] warsprite=new PImage[10];
 PImage bg;
-PImage [] imgct;
-PImage [] imgs1;
+PImage [] hadessprite;
+PImage [] gunner1;
 PImage[] bullet=new PImage[1];
 PImage[] bullets=new PImage[1];
 float x;
@@ -38,36 +42,55 @@ Button hero1;
 Button hero2;
 Button hero3;
 StopWatchTimer sw;
-
+ 
+void loadImages(){
+  hadessprite=new PImage[1];
+   bullet[0]=loadImage("bullet0.png");
+   bullets[0]=loadImage("bullet1.png");
+   for (int i = 0; i < 4; i++)
+     {
+       file = "Gunrun" + nf(i, 1) + ".png";
+       gunner[i] = loadImage(file);
+     }
+   gunner[4]=loadImage("GunIdle.png");
+   gunner[5]=loadImage("Gunhurt.png"); 
+   gunner[6]=loadImage("Gunjump.png");
+   file = "hades" + nf(0, 1) + ".png";
+   hadessprite[0] = loadImage(file);
+      bg = loadImage("arena.jpg");
+   magesprite[0]=loadImage("Magewalk.png");
+   magesprite[1]=loadImage("Magewalk2.png");
+   magesprite[2]=loadImage("MageIdle.png");
+   magesprite[3]=loadImage("Mageattack1.png");
+   magesprite[4]=loadImage("Mageattack2.png");
+   magesprite[5]=loadImage("Magehurt.png");
+   magesprite[6]=loadImage("Magejump.png");
+   warsprite[0]=loadImage("Warrun1.png");
+   warsprite[1]=loadImage("Warrun2.png");
+   warsprite[2]=loadImage("Warrun3.png");
+   warsprite[3]=loadImage("Warrun4.png");
+   warsprite[4]=loadImage("WarIdle.png");
+   warsprite[5]=loadImage("WarSelect.png");
+   warsprite[6]=loadImage("Warattack1.png");
+   warsprite[7]=loadImage("Warattack2.png");
+   warsprite[8]=loadImage("Warattack3.png");
+   warsprite[9]=loadImage("Warattack4.png");
+}
 
 void setup() 
 {  
    sw = new StopWatchTimer();
-   bullet[0]=loadImage("bullet0.png");
-   bullets[0]=loadImage("bullet1.png");
-   imgct=new PImage[1];
-   imgs1=new PImage[3];
-   for (int i = 0; i < 4; i++)
-     {
-       file = "Gunrun" + nf(i, 1) + ".png";
-       imgs[i] = loadImage(file);
-     }
-   imgs[4]=loadImage("GunIdle.png");
-   imgs[5]=loadImage("Gunhurt.png"); 
-   imgs[6]=loadImage("Gunjump.png");
-   file = "hades" + nf(0, 1) + ".png";
-   imgct[0] = loadImage(file); 
+   loadImages();
+    
    frameRate(9);
    minim = new Minim(this);
    song = minim.loadFile("FireEmblem.mp3");
    song.loop();
    surface.setResizable(true);
-   bg = loadImage("arena.jpg");
    surface.setSize(bg.width, bg.height);
    frameRate(15);
-   hades = new character(width*6/7,height/2.0,imgct, false);
-   hero = new character(width/6.0,height/2.0,imgs, true);
-   textBox = new MultilineTextBox("Your Text", 50, 50, 100, 20);
+   hades = new character(width*6/7,height/2.0,hadessprite, false,'h');
+   textBox = new MultilineTextBox("Your Text", width/2-250, height/2+50, 500, 20);
 }
 
 void draw() 
@@ -202,11 +225,11 @@ void mouseReleased()
 void NewGameMenu()
 {
       background(0);
-      textAlign(LEFT);
+      textAlign(CENTER);
       fill(255);
       textSize(40); 
    //   text("Welcome to our RPG", width/12+140, height/6);
-      text("Enter your Name", width/2, height/2);
+      text("Enter your Name Here", width/2, height/2);
       textBox.update();
       textBox.display();
   }
@@ -237,11 +260,18 @@ void HeroSelect()
   hero3.display();
   image(x[2],width/3*2,0,width/3,height);
   if (hero1.mouseOver()&&mousePressed)
-    screen=4;
+    {
+      screen=4;
+      hero = new character(width/6.0,height/2.0,gunner, true,'g');
+    }
       if (hero2.mouseOver()&&mousePressed)
-    screen=4;
+    {screen=4;
+    hero = new character(width/6.0,height/2.0,magesprite, true,'m');
+    }
       if (hero3.mouseOver()&&mousePressed)
+      {hero = new character(width/6.0,height/2.0,warsprite, true,'w');
     screen=4;
+      }
   
 }
 void combatScreen()
@@ -249,15 +279,20 @@ void combatScreen()
   background(bg);
   hero.position.x=width/4;
   hero.position.y=height/2;
-  hero.display(200,200,imgs[4]);
+  if(!hurt)
+  hero.display(200,200,gunner[4]);
+  else
+  hero.display(200,200,gunner[5]);
   hades.position.x=width*3/4;
   hades.position.y=height/2; 
   //hero.dontmove();
   hades.display(200,200);
+  if(!turnOffGUI){
   button3 = new Button("Attack", width/10-100, height*7/8 -60,140, 60, color(0), color(#468BFF), color(255));
   button3.display();
   button4 = new Button("Abilities", width/10-100, height*7/8,140, 60, color(0), color(#468BFF), color(255));
   button4.display();
+  }
   hero.displayhp();
   hero.displaymp();
   hades.displayhp();
@@ -269,10 +304,12 @@ void combatScreen()
   if (button3.mouseOver()&&mousePressed)
     {     
       if (turn){
-        hero.attack(hades);  
+        hero.attack(hades);
+        hurt=false;
         move=true;
         sw.start();
         turn=false;
+        turnOffGUI=true;
       }
     }
   for (Shot shot: new ArrayList <Shot> (shots))
@@ -295,6 +332,9 @@ void combatScreen()
         else{
           counter=false;
           shots.remove(shot);
+          hero.display(200,200,gunner[5]);
+          hurt=true;
+          turnOffGUI=false;
         }
       }
     }

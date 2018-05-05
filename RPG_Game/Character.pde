@@ -1,9 +1,10 @@
 class character extends Sprite{
   float hp=100; float mp=30;
-  boolean dontmove=false; boolean hero;
-character(float posx,float posy,PImage[] images, boolean hero){
+  boolean dontmove=false; boolean hero; char wartype;
+character(float posx,float posy,PImage[] images, boolean hero, char type){
  super(posx,posy,images);
  this.hero=hero;
+ wartype=type;
 }
 
 void dontmove()
@@ -12,14 +13,32 @@ void dontmove()
 }
   void alterX(int n){
     if(!dontmove){
-      frame = (frame + 1) % 4;
+      switch(wartype)
+      {
+            case 'm': frame = (frame + 1) % 2 ;
+                     break;
+            case 'w':  frame = (frame + 1) % 4;
+                     break;
+            case 'g':  frame = (frame + 1) % 4;
+                     break;                     
+                     
+      }
       if (n==1)
         position.x+=3;
         else position.x-=3;
   }}
   void alterY(int n){
     if(!dontmove){
-      frame = (frame + 1) % 4;
+      switch(wartype)
+      {
+            case 'm': frame = (frame + 1) % 2 ;
+                     break;
+            case 'w':  frame = (frame + 1) % 4;
+                     break;
+            case 'g':  frame = (frame + 1) % 4;
+                     break;                     
+                     
+      }
             if (n==1)
         position.y-=3;
         else position.y+=3;
@@ -28,8 +47,7 @@ void dontmove()
 {
   if(ready)
   return true;
-  if(position.y==hades.position.y)
-  if(position.x<hades.position.x&&position.x>hades.position.x-100)
+  if((position.x<hades.position.x&&position.x>hades.position.x-100)&&(position.y<hades.position.y+30&&position.y>hades.position.y-30))
    return true;
    return false;
 }
